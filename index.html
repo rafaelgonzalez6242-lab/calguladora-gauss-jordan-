@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Gauss Jordan 3x3</title>
+<style>
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        background: linear-gradient(135deg, #e8ecf3, #f7f9fc);
+        margin: 0;
+        padding: 20px;
+        color: #333;
+    }
+    h1, h2 {
+        text-align: center;
+        font-weight: 700;
+        color: #2b3d5b;
+    }
+    .container {
+        max-width: 1000px;
+        margin: auto;
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 16px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        backdrop-filter: blur(6px);
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 25px;
+        background: #fafafa;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    table td {
+        border: 1px solid #d0d7e5;
+        padding: 10px;
+        text-align: center;
+    }
+    table input {
+        width: 70px;
+        text-align: center;
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid #b8c4d1;
+        background: #fff;
+    }
+    button {
+        display: block;
+        width: 250px;
+        margin: 25px auto;
+        padding: 12px;
+        font-size: 17px;
+        font-weight: bold;
+        background: #1e5fbf;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s ease;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    }
+    button:hover {
+        background: #154a93;
+        transform: translateY(-2px);
+    }
+    pre {
+        background: #0e1a2b;
+        color: #00ff9c;
+        padding: 18px;
+        border-radius: 10px;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        margin-top: 15px;
+        font-size: 15px;
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.4);
+    }
+    section {
+        background: #ffffff;
+        padding: 20px;
+        margin-top: 30px;
+        border-radius: 12px;
+        box-shadow: 0 5px 18px rgba(0, 0, 0, 0.1);
+        transition: 0.3s ease;
+    }
+    section:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+    }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Método de Gauss Jordan 3x3</h1>
+
+<h2>Ingresar datos</h2>
+<table border="1">
+    <tr>
+        <td><input id="a11" type="number"></td>
+        <td><input id="a12" type="number"></td>
+        <td><input id="a13" type="number"></td>
+        <td>| <input id="b1" type="number"></td>
+    </tr>
+    <tr>
+        <td><input id="a21" type="number"></td>
+        <td><input id="a22" type="number"></td>
+        <td><input id="a23" type="number"></td>
+        <td>| <input id="b2" type="number"></td>
+    </tr>
+    <tr>
+        <td><input id="a31" type="number"></td>
+        <td><input id="a32" type="number"></td>
+        <td><input id="a33" type="number"></td>
+        <td>| <input id="b3" type="number"></td>
+    </tr>
+</table>
+
+<button onclick="resolver()">Ejecutar Gauss Jordan</button>
+
+<h2>Proceso paso a paso</h2>
+<pre id="proceso"></pre>
+
+<script>
+function resolver() {
+    let p = document.getElementById("proceso");
+    p.textContent = "";
+
+    let A = [
+        [parseFloat(a11.value), parseFloat(a12.value), parseFloat(a13.value), parseFloat(b1.value)],
+        [parseFloat(a21.value), parseFloat(a22.value), parseFloat(a23.value), parseFloat(b2.value)],
+        [parseFloat(a31.value), parseFloat(a32.value), parseFloat(a33.value), parseFloat(b3.value)]
+    ];
+
+    function mostrar() {
+        for (let i = 0; i < 3; i++) {
+            p.textContent += `${A[i][0].toFixed(3)}   ${A[i][1].toFixed(3)}   ${A[i][2].toFixed(3)} | ${A[i][3].toFixed(3)}\n`;
+        }
+        p.textContent += "\n";
+    }
+
+    p.textContent += "Matriz inicial:\n";
+    mostrar();
+
+    // Pivote 1
+    let piv = A[0][0];
+    for (let j = 0; j < 4; j++) A[0][j] /= piv;
+    p.textContent += "Pivote 1 en 1,1 → hacer que sea 1:\n";
+    mostrar();
+
+    for (let i = 1; i < 3; i++) {
+        let f = A[i][0];
+        for (let j = 0; j < 4; j++) A[i][j] -= f * A[0][j];
+    }
+    p.textContent += "Eliminar columna 1 en filas 2 y 3:\n";
+    mostrar();
+
+    // Pivote 2
+    piv = A[1][1];
+    for (let j = 0; j < 4; j++) A[1][j] /= piv;
+    p.textContent += "Pivote 2 en 2,2 → hacer que sea 1:\n";
+    mostrar();
+
+    let f2 = A[0][1];
+    for (let j = 0; j < 4; j++) A[0][j] -= f2 * A[1][j];
+    let f3 = A[2][1];
+    for (let j = 0; j < 4; j++) A[2][j] -= f3 * A[1][j];
+    p.textContent += "Eliminar columna 2 en filas 1 y 3:\n";
+    mostrar();
+
+    // Pivote 3
+    piv = A[2][2];
+    for (let j = 0; j < 4; j++) A[2][j] /= piv;
+    p.textContent += "Pivote 3 en 3,3 → hacer que sea 1:\n";
+    mostrar();
+
+    let f1 = A[0][2];
+    for (let j = 0; j < 4; j++) A[0][j] -= f1 * A[2][j];
+    let f22 = A[1][2];
+    for (let j = 0; j < 4; j++) A[1][j] -= f22 * A[2][j];
+    p.textContent += "Eliminar columna 3 en filas 1 y 2:\n";
+    mostrar();
+
+    p.textContent += "SOLUCIÓN FINAL:\n";
+    p.textContent += `x1 = ${A[0][3].toFixed(3)}\n`;
+    p.textContent += `x2 = ${A[1][3].toFixed(3)}\n`;
+    p.textContent += `x3 = ${A[2][3].toFixed(3)}\n`;
+}
+</script>
+
+<!-- ================= SECCIONES EXTRA ================= -->
+<section>
+<h2>Información teórica</h2>
+<p><a href="https://gamma.app/docs/Metodo-de-Gauss-Jordan-q26qgi34uenomqk?mode=doc" target="_blank">Abrir presentación teórica en Gamma</a></p>
+</section>
+
+<section>
+<h2>Video explicativo</h2>
+<p><a href="codigo del programa gauss jordan con ecuacion Delta por 3 - YouTube" target="_blank">Ver video en YouTube</a></p>
+</section>
+
+<section>
+<h2>Pseudocódigo</h2>
+<pre>
+Algoritmo GaussJordan
+    
+    Definir x1y1, x2y1, x3y1 Como Real
+    Definir x1y2, x2y2, x3y2 Como Real
+    Definir x1y3, x2y3, x3y3 Como Real
+    Definir r1, r2, r3 Como Real
+    
+    Escribir "RESOLUCION POR REDUCCION DE RENGLONES (GAUSS-JORDAN)"
+    
+    Escribir "Numero en la posicion 1,1: "
+    Leer x1y1
+    Escribir "Numero en la posicion 1,2: "
+    Leer x1y2
+    Escribir "Numero en la posicion 1,3: "
+    Leer x1y3
+    Escribir "Numero en la posicion 2,1: "
+    Leer x2y1
+    Escribir "Numero en la posicion 2,2: "
+    Leer x2y2
+    Escribir "Numero en la posicion 2,3: "
+    Leer x2y3
+    Escribir "Numero en la posicion 3,1: "
+    Leer x3y1
+    Escribir "Numero en la posicion 3,2: "
+    Leer x3y2
+    Escribir "Numero en la posicion 3,3: "
+    Leer x3y3
+    Escribir "Resultado de la primera fila:"
+    Leer r1
+    Escribir "Resultado de la segunda fila:"
+    Leer r2
+    Escribir "Resultado de la tercera fila:"
+    Leer r3
+    
+    // PRIMER PIVOTE (1,1)//
+    Si x1y1 <> 1 Entonces
+        x1y2 <- x1y2 / x1y1
+        x1y3 <- x1y3 / x1y1
+        r1 <- r1 / x1y1
+        x1y1 <- x1y1 / x1y1
+    FinSi
+    
+    x2y2 <- x2y2 - (x2y1 * x1y2)
+    x2y3 <- x2y3 - (x2y1 * x1y3)
+    r2 <- r2 - (x2y1 * r1)
+    x2y1 <- x2y1 - (x2y1 * x1y1)
+    
+    x3y2 <- x3y2 - (x3y1 * x1y2)
+    x3y3 <- x3y3 - (x3y1 * x1y3)
+    r3 <- r3 - (x3y1 * r1)
+    x3y1 <- x3y1 - (x3y1 * x1y1)
+    
+    Escribir x1y1, " ", x1y2, " ", x1y3, " | ", r1
+    Escribir x2y1, " ", x2y2, " ", x2y3, " | ", r2
+    Escribir x3y1, " ", x3y2, " ", x3y3, " | ", r3
+    Escribir ""
+    
+    // SEGUNDO PIVOTE (2,2)//
+    Si x2y2 <> 1 Entonces
+        x2y3 <- x2y3 / x2y2
+        r2 <- r2 / x2y2
+        x2y2 <- x2y2 / x2y2
+    FinSi
+    
+    x1y3 <- x1y3 - (x1y2 * x2y3)
+    r1 <- r1 - (x1y2 * r2)
+    x1y2 <- x1y2 - (x1y2 * x2y2)
+    
+    x3y3 <- x3y3 - (x3y2 * x2y3)
+    r3 <- r3 - (x3y2 * r2)
+    x3y2 <- x3y2 - (x3y2 * x2y2)
+    
+    Escribir x1y1, " ", x1y2, " ", x1y3, " | ", r1
+    Escribir x2y1, " ", x2y2, " ", x2y3, " | ", r2
+    Escribir x3y1, " ", x3y2, " ", x3y3, " | ", r3
+    Escribir ""
+    
+    // TERCER PIVOTE (3,3)//
+    Si x3y3 <> 1 Entonces
+        r3 <- r3 / x3y3
+        x3y3 <- x3y3 / x3y3
+    FinSi
+    
+    r1 <- r1 - (x1y3 * r3)
+    x1y3 <- x1y3 - (x1y3 * x3y3)
+    
+    r2 <- r2 - (x2y3 * r3)
+    x2y3 <- x2y3 - (x2y3 * x3y3)
+    
+    Escribir x1y1, " ", x1y2, " ", x1y3, " | ", r1
+    Escribir x2y1, " ", x2y2, " ", x2y3, " | ", r2
+    Escribir x3y1, " ", x3y2, " ", x3y3, " | ", r3
+    Escribir ""
+    
+    Escribir "El resultado de x1: ", r1
+    Escribir "El resultado de x2: ", r2
+    Escribir "El resultado de x3: ", r3
+
+FinAlgoritmo
+</pre>
+</section>
+</section>
+
+<section>
+<h2>Programa en C++</h2>
+<pre>
+
+#include <iostream>
+#include <iomanip>
+using namespace std;
+
+int main() {
+    float x1y1, x2y1, x3y1;
+    float x1y2, x2y2, x3y2;
+    float x1y3, x2y3, x3y3;
+    float r1, r2, r3;
+
+    cout << "===========================================================\n";
+    cout << "  RESOLUCION DE SISTEMAS 3x3 POR GAUSS-JORDAN\n";
+    cout << "===========================================================\n\n";
+
+    cout << fixed << setprecision(4);
+
+    // Entrada de coeficientes
+    cout << "Coeficientes de la primera fila (x1 y1 y z1):\n";
+    cin >> x1y1 >> x1y2 >> x1y3;
+
+    cout << "Coeficientes de la segunda fila (x2 y2 y z2):\n";
+    cin >> x2y1 >> x2y2 >> x2y3;
+
+    cout << "Coeficientes de la tercera fila (x3 y3 y z3):\n";
+    cin >> x3y1 >> x3y2 >> x3y3;
+
+    cout << "Resultados de cada ecuacion (r1 r2 r3):\n";
+    cin >> r1 >> r2 >> r3;
+
+    // Primer pivote (1,1)
+    if (x1y1 != 1) {
+        x1y2 /= x1y1;
+        x1y3 /= x1y1;
+        r1    /= x1y1;
+        x1y1  /= x1y1;
+    }
+
+    // Reducir columna 1 en fila 2
+    x2y2 -= (x2y1 * x1y2);
+    x2y3 -= (x2y1 * x1y3);
+    r2   -= (x2y1 * r1);
+    x2y1 -= (x2y1 * x1y1);
+
+    // Reducir columna 1 en fila 3
+    x3y2 -= (x3y1 * x1y2);
+    x3y3 -= (x3y1 * x1y3);
+    r3   -= (x3y1 * r1);
+    x3y1 -= (x3y1 * x1y1);
+
+    // Segundo pivote (2,2)
+    if (x2y2 != 1) {
+        x2y3 /= x2y2;
+        r2   /= x2y2;
+        x2y2 /= x2y2;
+    }
+
+    // Reducir columna 2 en fila 1
+    x1y3 -= (x1y2 * x2y3);
+    r1   -= (x1y2 * r2);
+    x1y2 -= (x1y2 * x2y2);
+
+    // Reducir columna 2 en fila 3
+    x3y3 -= (x3y2 * x2y3);
+    r3   -= (x3y2 * r2);
+    x3y2 -= (x3y2 * x2y2);
+
+    // Tercer pivote (3,3)
+    if (x3y3 != 1) {
+        r3   /= x3y3;
+        x3y3 /= x3y3;
+    }
+
+    // Reducir columna 3 en fila 1
+    r1   -= (x1y3 * r3);
+    x1y3 -= (x1y3 * x3y3);
+
+    // Reducir columna 3 en fila 2
+    r2   -= (x2y3 * r3);
+    x2y3 -= (x2y3 * x3y3);
+
+    // Matriz final
+    cout << "\nMatriz reducida final:\n";
+    cout << x1y1 << "  " << x1y2 << "  " << x1y3 << "  |  " << r1 << endl;
+    cout << x2y1 << "  " << x2y2 << "  " << x2y3 << "  |  " << r2 << endl;
+    cout << x3y1 << "  " << x3y2 << "  " << x3y3 << "  |  " << r3 << endl << endl;
+
+    // Solución final
+    cout << "Soluciones:\n";
+    cout << "x1 = " << r1 << endl;
+    cout << "x2 = " << r2 << endl;
+    cout << "x3 = " << r3 << endl;
+
+    return 0;
+}
+
+</pre>
+</section>
+
+<section>
+<h2>Referencias</h2>
+<ul>
+    <li>Lay, D. C., Lay, S. R., & McDonald, J. J. (2016). <i>Álgebra lineal y sus aplicaciones</i> (5.ª ed.). Pearson.</li>
+    <li>Larson, R., & Falvo, D. C. (2016). <i>Álgebra lineal elemental</i>. Cengage Learning.</li>
+    <li>Kolman, B., & Hill, D. R. (2014). <i>Álgebra lineal con aplicaciones</i> (9.ª ed.). Pearson.</li>
+    <li>Khan Academy. (2024). Sistemas de ecuaciones. https://es.khanacademy.org/math/algebra</li>
+    <li>Stroustrup, B. (2013). <i>The C++ programming language</i> (4th ed.). Addison-Wesley.</li>
+</ul>
+</section>
+</section>
+
+<section>
+<h2>Integrantes</h2>
+<ul>
+    <li>Rafael Gonzalez Castro — 225962427</li>
+    <li>Humberto García Ruiz — 225962249</li>
+    <li>Josué Ramirez Lozano — 225962303</li>
+    <li>Emanuel Gonzales Rodríguez — 225962338</li>
+</ul>
+</section>
+</section>
+
+</div>
+</body>
+</html>
